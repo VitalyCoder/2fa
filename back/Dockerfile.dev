@@ -1,0 +1,24 @@
+FROM node:22 AS build
+WORKDIR /source
+
+COPY package*.json ./
+
+RUN cd npm ci
+
+COPY . .
+
+RUN npx prisma generate
+RUN npm run build
+
+FROM node:22-alpine
+
+WORKDIR /app
+COPY --from=build /source/dist ./dist
+COPY --from=build /source/prisma ./prisma
+COPY --from=build /source/package*.json ./
+
+RUN npm ci
+
+EXPOSE 4200
+
+CMD ["sh", "-c", "npx prisma migrate dev && node dist/src/main"]

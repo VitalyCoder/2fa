@@ -1,0 +1,25 @@
+FROM node:22 AS build
+WORKDIR /source
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Копируем standalone сборку
+COPY --from=build /source/.next/standalone ./
+COPY --from=build /source/.next/static ./.next/static
+COPY --from=build /source/public ./public
+
+# Устанавливаем только production зависимости (уже включены в standalone)
+EXPOSE 3000
+
+# Используем node для запуска standalone приложения
+CMD ["node", "server.js"]

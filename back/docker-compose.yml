@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  postgres_twofactor:
+    container_name: postgres_twofactor
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - main
+
+  twofactor_service:
+    container_name: twofactor_service
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: always
+    depends_on:
+      - postgres_twofactor
+    env_file:
+      - .env
+    ports:
+      - 4200:4200
+    networks:
+      - main
+
+volumes:
+  postgres_data:
+
+networks:
+  main:

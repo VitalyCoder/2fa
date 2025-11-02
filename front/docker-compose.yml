@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  twofactor_client:
+    container_name: twofactor_client
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    networks:
+      - main
+
+networks:
+  main:
