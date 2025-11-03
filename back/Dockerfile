@@ -6,8 +6,11 @@ RUN npm ci --frozen-lockfile
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-COPY prisma/schema.prisma /app/prisma
-COPY --from=dependencies /app/node_modules ./node_modules
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
 COPY . .
 
 # Generate Prisma client and build
