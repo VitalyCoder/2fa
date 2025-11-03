@@ -4,13 +4,20 @@ FROM node:22-alpine AS base
 FROM base AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+# Install production dependencies
+RUN npm ci --only=production --frozen-lockfile && npm cache clean --force
+
+# Install all dependencies (for building)
+FROM base AS deps-build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+COPY --from=deps-build /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
