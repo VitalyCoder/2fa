@@ -1,20 +1,4 @@
 services:
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/certs:/etc/nginx/certs
-    depends_on:
-      - client
-      - server
-    networks:
-      - main
-
   postgres_twofactor:
     container_name: postgres_twofactor
     image: postgres:16-alpine

@@ -6,7 +6,6 @@ RUN npm ci --frozen-lockfile
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-COPY /app/prisma ./prisma/schema.prisma
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
